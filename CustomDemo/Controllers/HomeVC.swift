@@ -23,22 +23,26 @@ class HomeVC: BaseVC {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     func getListFromServer() {
-        let params = "term=Michael jackson"
         MyLoader.showLoadingView()
+        let params = "term=Michael jackson"
         getRequest(kSearch_url + params) { (response, error, statusCode) in
+            DispatchQueue.main.async(execute: {
             MyLoader.hideLoadingView()
+            })
             if error == nil {
                 if statusCode == 200 {
-                let responseObj = RSSongsData.init(json: response!)
-                self.arySongList = responseObj.results!
-                self.tblSongList.reloadData()
+                    let responseObj = RSSongsData.init(json: response!)
+                    self.arySongList = responseObj.results!
+                    DispatchQueue.main.async(execute: {
+                        self.tblSongList.reloadData()
+                    })
                 } else {
                     showAlertView(title: "Error", message: "Something went wrong. We are Working on it.", ref: self)
                 }
@@ -47,7 +51,7 @@ class HomeVC: BaseVC {
             }
         }
     }
-
+    
 }
 extension HomeVC: UITableViewDelegate {
 }
